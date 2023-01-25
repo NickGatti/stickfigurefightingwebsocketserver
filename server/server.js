@@ -36,17 +36,28 @@ wss.on('connection', (ws) => {
       console.log('Too many players.');
     }
 
-    const playerNumber = id === players.one.id.uuid ? 1 : 2
+    const playerNumber = id === players.one.id.uuid ? 1 : 2;
 
     const metadata = { id, color, playerNumber };
 
     clients.set(ws, metadata);
+    
+    const defuq = {
+      message: "Connected",
+      playerNumber
+    };
+
+    const connectMessage = JSON.stringify(defuq);
+
+    [...clients.keys()].forEach((client) => {
+      client.send(connectMessage);
+    });
 
     ws.on('message', (messageAsString) => {
         const message = JSON.parse(messageAsString);
         const metadata = clients.get(ws);
 
-        console.log('meta data', metadata)
+        console.log('meta data', metadata);
   
         
         // message.sender = metadata.id;
@@ -54,9 +65,9 @@ wss.on('connection', (ws) => {
         // message.player = metadata.id === players.one.id ?? players.one.id
         // message.player = metadata.id === players.two.id ?? players.two.id
 
-        console.log('MSG:', message)
+        console.log('MSG:', message);
 
-        console.log(players)
+        console.log(players);
 
         const outbound = JSON.stringify({message, playerNumber});
 
